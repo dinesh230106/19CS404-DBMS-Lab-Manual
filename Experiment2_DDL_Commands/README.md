@@ -105,123 +105,187 @@ CREATE TABLE Table_Name (
 
 **Question 1**
 --
--- Paste Question 1 here
+<img width="1135" height="382" alt="Screenshot 2025-10-02 135439" src="https://github.com/user-attachments/assets/8bfc2901-7eae-4f6c-88ea-45c1a174cb1f" />
 
-```sql
--- Paste your SQL code below for Question 1
+```
+INSERT INTO Customers (CustomerID, Name, Address, Email)
+SELECT CustomerID, Name, Address, Email
+FROM Old_customers;
 ```
 
 **Output:**
 
-![Output1](output.png)
+<img width="1266" height="410" alt="Screenshot 2025-10-02 135510" src="https://github.com/user-attachments/assets/a129a332-e616-4bdd-81ee-6380a4881cce" />
+
 
 **Question 2**
 ---
--- Paste Question 2 here
+<img width="1317" height="495" alt="Screenshot 2025-10-02 135616" src="https://github.com/user-attachments/assets/b5074b49-aab4-46ff-a2a9-0df185378ce0" />
+
 
 ```sql
--- Paste your SQL code below for Question 2
+INSERT INTO Books (ISBN, Title, Author)
+VALUES ('978-6655443321', 'Big Data Analytics', 'Karen Adams');
 ```
 
 **Output:**
 
-![Output2](output.png)
+<img width="883" height="419" alt="image" src="https://github.com/user-attachments/assets/8cbc03bf-8f25-4d64-86d6-cfc90e61f380" />
+
 
 **Question 3**
 ---
--- Paste Question 3 here
+
+<img width="1426" height="429" alt="Screenshot 2025-10-02 135648" src="https://github.com/user-attachments/assets/e08e7991-4efa-4e41-aa6d-512df409540c" />
 
 ```sql
--- Paste your SQL code below for Question 3
+CREATE TABLE Invoices (
+    InvoiceID INTEGER PRIMARY KEY,
+    InvoiceDate DATE,
+    Amount REAL CHECK (Amount > 0),
+    DueDate DATE,
+    OrderID INTEGER,
+    FOREIGN KEY (OrderID) REFERENCES Orders(OrderID),
+    CHECK (DueDate > InvoiceDate)
+);
 ```
 
 **Output:**
 
-![Output3](output.png)
+<img width="890" height="383" alt="image" src="https://github.com/user-attachments/assets/56639bfb-13dc-474b-8974-7b935c7e49fa" />
+
 
 **Question 4**
 ---
--- Paste Question 4 here
+
+<img width="1435" height="301" alt="Screenshot 2025-10-02 135708" src="https://github.com/user-attachments/assets/b6dcf547-a55a-44e9-ba8c-deb32539e499" />
 
 ```sql
--- Paste your SQL code below for Question 4
+CREATE TABLE jobs (
+    job_id INTEGER,
+    job_title TEXT DEFAULT '',
+    min_salary INTEGER DEFAULT 8000,
+    max_salary INTEGER DEFAULT NULL
+);
 ```
 
 **Output:**
 
-![Output4](output.png)
+<img width="895" height="431" alt="image" src="https://github.com/user-attachments/assets/bd983daf-6ca5-4eca-baa1-a9d30591edbd" />
+
 
 **Question 5**
 ---
--- Paste Question 5 here
+
+<img width="1415" height="383" alt="Screenshot 2025-10-02 135717" src="https://github.com/user-attachments/assets/76b02326-70b9-484b-9eac-f33ae20c5f17" />
 
 ```sql
--- Paste your SQL code below for Question 5
+CREATE TABLE Department (
+    DepartmentID INTEGER PRIMARY KEY,
+    DepartmentName TEXT UNIQUE NOT NULL,
+    Location TEXT
+);
 ```
 
 **Output:**
 
-![Output5](output.png)
+<img width="889" height="388" alt="image" src="https://github.com/user-attachments/assets/486f6fd7-a297-4109-ba34-046cde96286a" />
+
 
 **Question 6**
 ---
--- Paste Question 6 here
+<img width="1423" height="481" alt="Screenshot 2025-10-02 135728" src="https://github.com/user-attachments/assets/b3713750-088c-4fe6-984b-efa8493ed40b" />
+
 
 ```sql
--- Paste your SQL code below for Question 6
+ALTER TABLE Companies RENAME COLUMN name TO first_name;
+
+ALTER TABLE Companies ADD COLUMN mobilenumber number;
+
+ALTER TABLE Companies ADD COLUMN DOB Date;
+
+ALTER TABLE Companies ADD COLUMN State varchar(30);
 ```
 
 **Output:**
 
-![Output6](output.png)
+<img width="892" height="492" alt="image" src="https://github.com/user-attachments/assets/999b76e0-2be5-4287-9525-1a5ddac31491" />
+
 
 **Question 7**
 ---
--- Paste Question 7 here
+<img width="1401" height="513" alt="Screenshot 2025-10-02 135735" src="https://github.com/user-attachments/assets/2b7ee64f-8c9b-49c7-813a-68b2437acdd8" />
+
 
 ```sql
--- Paste your SQL code below for Question 7
+INSERT INTO Employee (EmployeeID, Name, Position)
+VALUES (5, 'George Clark', 'Consultant');
+
+INSERT INTO Employee (EmployeeID, Name, Position, Department, Salary)
+VALUES (7, 'Noah Davis', 'Manager', 'HR', 60000);
+
+INSERT INTO Employee (EmployeeID, Name, Position, Department)
+VALUES (8, 'Ava Miller', 'Consultant', 'IT');
 ```
 
 **Output:**
 
-![Output7](output.png)
+<img width="879" height="383" alt="image" src="https://github.com/user-attachments/assets/d678cf22-d9d4-46eb-b3a4-c97f4fcab178" />
+
 
 **Question 8**
 ---
--- Paste Question 8 here
+
+<img width="1411" height="369" alt="Screenshot 2025-10-02 135744" src="https://github.com/user-attachments/assets/c7d9c604-0a3e-442d-b02d-94983f837a93" />
 
 ```sql
--- Paste your SQL code below for Question 8
+ALTER TABLE Student_details
+ADD COLUMN email TEXT NOT NULL DEFAULT 'Invalid';
 ```
 
 **Output:**
 
-![Output8](output.png)
+<img width="901" height="366" alt="image" src="https://github.com/user-attachments/assets/e2948149-37a5-4b8e-a739-ee2f6aa32bc0" />
+
 
 **Question 9**
 ---
--- Paste Question 9 here
+
+<img width="1418" height="433" alt="Screenshot 2025-10-02 135756" src="https://github.com/user-attachments/assets/f4cde11c-1a1f-4a59-845e-28ba93e4e1dc" />
 
 ```sql
--- Paste your SQL code below for Question 9
+CREATE TABLE Events (
+    EventID INTEGER,
+    EventName TEXT,
+    EventDate DATE
+);
 ```
 
 **Output:**
 
-![Output9](output.png)
+<img width="907" height="473" alt="image" src="https://github.com/user-attachments/assets/1783deec-1fd4-4be6-85ac-20236751a41c" />
+
 
 **Question 10**
 ---
--- Paste Question 10 here
+
+<img width="1387" height="403" alt="Screenshot 2025-10-02 135809" src="https://github.com/user-attachments/assets/76731ab3-509c-4f79-b79c-1d8fe99ed8c3" />
 
 ```sql
--- Paste your SQL code below for Question 10
+CREATE TABLE ProjectAssignments (
+    AssignmentID INTEGER PRIMARY KEY,
+    EmployeeID INTEGER,
+    ProjectID INTEGER,
+    AssignmentDate DATE NOT NULL,
+    FOREIGN KEY (EmployeeID) REFERENCES Employees(EmployeeID),
+    FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID)
+);
 ```
 
 **Output:**
 
-![Output10](output.png)
+<img width="883" height="391" alt="image" src="https://github.com/user-attachments/assets/743bcf24-c57b-435c-a52b-557f2107d384" />
+
 
 
 ## RESULT
