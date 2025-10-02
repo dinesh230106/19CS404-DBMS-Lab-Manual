@@ -76,8 +76,77 @@ END;
 - Use a simple cursor to fetch and display employee names and designations.
 - Implement exception handling to catch the relevant exceptions and display appropriate messages.
 
-**Output:**  
-The program should display the employee details or an error message.
+## program:
+```
+-- PL/SQL Program Using Simple Cursor with Exception Handling
+
+-- Step 1: Create the employees table (run once)
+BEGIN
+   EXECUTE IMMEDIATE 'CREATE TABLE employees (
+      emp_id NUMBER PRIMARY KEY,
+      emp_name VARCHAR2(50),
+      designation VARCHAR2(50)
+   )';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE = -955 THEN
+         NULL; -- Table already exists
+      ELSE
+         RAISE;
+      END IF;
+END;
+/
+
+-- Step 2: Insert sample data (run once)
+BEGIN
+   INSERT INTO employees (emp_id, emp_name, designation) VALUES (1, 'Alice', 'Manager');
+   INSERT INTO employees (emp_id, emp_name, designation) VALUES (2, 'Bob', 'Engineer');
+   INSERT INTO employees (emp_id, emp_name, designation) VALUES (3, 'Charlie', 'Analyst');
+   COMMIT;
+EXCEPTION
+   WHEN OTHERS THEN
+      ROLLBACK;
+END;
+/
+
+-- Step 3: PL/SQL program using simple cursor
+DECLARE
+   -- Declare a cursor
+   CURSOR emp_cursor IS
+      SELECT emp_name, designation FROM employees;
+   
+   -- Variables to hold fetched values
+   v_name employees.emp_name%TYPE;
+   v_designation employees.designation%TYPE;
+   
+   -- Flag to check if any row is fetched
+   row_found BOOLEAN := FALSE;
+BEGIN
+   -- Open the cursor and fetch rows
+   FOR emp_rec IN emp_cursor LOOP
+      DBMS_OUTPUT.PUT_LINE('Employee Name: ' || emp_rec.emp_name || ', Designation: ' || emp_rec.designation);
+      row_found := TRUE;
+   END LOOP;
+   
+   -- Handle case when no rows found
+   IF NOT row_found THEN
+      RAISE NO_DATA_FOUND;
+   END IF;
+   
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('No employees found in the table.');
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+```
+
+**Output:** 
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/fd41b926-340d-47ef-a45d-2a49e2ea7655" />
+
 
 ---
 
@@ -94,9 +163,94 @@ The program should display the employee details or an error message.
 - Insert sample salary values for the employees.
 - Use a parameterized cursor to accept a salary range as input and fetch employees within that range.
 - Implement exception handling to catch and display relevant error messages.
+## program:
+```
+-- =========================================================
+-- Complete PL/SQL Script: Parameterized Cursor with Exception Handling
+-- =========================================================
 
+-- Step 1: Create the employees table (if it doesn't exist)
+BEGIN
+   EXECUTE IMMEDIATE '
+      CREATE TABLE employees (
+         emp_id NUMBER PRIMARY KEY,
+         emp_name VARCHAR2(50),
+         designation VARCHAR2(50),
+         salary NUMBER
+      )
+   ';
+EXCEPTION
+   WHEN OTHERS THEN
+      IF SQLCODE = -955 THEN
+         NULL; -- Table already exists, ignore
+      ELSE
+         RAISE;
+      END IF;
+END;
+/
+-- ---------------------------------------------------------
+
+-- Step 2: Insert sample data
+BEGIN
+   -- Delete existing data to avoid duplicates
+   DELETE FROM employees;
+   
+   -- Insert sample records
+   INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (1, 'Alice', 'Manager', 50000);
+   INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (2, 'Bob', 'Engineer', 40000);
+   INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (3, 'Charlie', 'Analyst', 45000);
+   INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (4, 'David', 'Clerk', 35000);
+   
+   COMMIT;
+EXCEPTION
+   WHEN OTHERS THEN
+      ROLLBACK;
+      DBMS_OUTPUT.PUT_LINE('Error inserting sample data: ' || SQLERRM);
+END;
+/
+-- ---------------------------------------------------------
+
+-- Step 3: PL/SQL Program Using Parameterized Cursor
+DECLARE
+   -- Salary range parameters
+   min_salary NUMBER := 42000;
+   max_salary NUMBER := 55000;
+
+   -- Parameterized cursor declaration
+   CURSOR emp_cursor (low_sal NUMBER, high_sal NUMBER) IS
+      SELECT emp_name, designation, salary
+      FROM employees
+      WHERE salary BETWEEN low_sal AND high_sal;
+
+   -- Flag to check if any row is fetched
+   row_found BOOLEAN := FALSE;
+
+BEGIN
+   -- Loop through cursor results
+   FOR emp_rec IN emp_cursor(min_salary, max_salary) LOOP
+      DBMS_OUTPUT.PUT_LINE('Employee Name: ' || emp_rec.emp_name ||
+                           ', Designation: ' || emp_rec.designation ||
+                           ', Salary: ' || emp_rec.salary);
+      row_found := TRUE;
+   END LOOP;
+
+   -- Raise NO_DATA_FOUND if no employees matched the salary range
+   IF NOT row_found THEN
+      RAISE NO_DATA_FOUND;
+   END IF;
+
+EXCEPTION
+   WHEN NO_DATA_FOUND THEN
+      DBMS_OUTPUT.PUT_LINE('No employees found in the salary range ' || min_salary || ' - ' || max_salary);
+   WHEN OTHERS THEN
+      DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+```
 **Output:**  
-The program should display the employee details within the specified salary range or an error message if no data is found.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/14487685-0fcb-40a8-9a8e-8fb829883a23" />
+
 
 ---
 
@@ -113,9 +267,74 @@ The program should display the employee details within the specified salary rang
 - Insert sample department numbers for employees.
 - Use a cursor FOR loop to fetch and display employee names along with their department numbers.
 - Implement exception handling to catch the relevant exceptions.
+## program:
+```
+-- ============================================
+-- Step 1: Create the employees table
+-- ============================================
+BEGIN
+    -- Drop table if it already exists (optional)
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP TABLE employees';
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN -- ORA-00942 = table does not exist
+                RAISE;
+            END IF;
+    END;
 
+    -- Create table
+    EXECUTE IMMEDIATE '
+        CREATE TABLE employees (
+            employee_id   NUMBER PRIMARY KEY,
+            employee_name VARCHAR2(50),
+            dept_no       NUMBER
+        )
+    ';
+END;
+/
+-- ============================================
+-- Step 2: Insert sample employee data
+-- ============================================
+BEGIN
+    INSERT INTO employees (employee_id, employee_name, dept_no) VALUES (1, 'Alice', 10);
+    INSERT INTO employees (employee_id, employee_name, dept_no) VALUES (2, 'Bob', 20);
+    INSERT INTO employees (employee_id, employee_name, dept_no) VALUES (3, 'Charlie', 10);
+    INSERT INTO employees (employee_id, employee_name, dept_no) VALUES (4, 'David', 30);
+    INSERT INTO employees (employee_id, employee_name, dept_no) VALUES (5, 'Eva', 20);
+
+    COMMIT;
+END;
+/
+-- ============================================
+-- Step 3: PL/SQL block with cursor FOR loop
+-- ============================================
+DECLARE
+    v_count NUMBER := 0;  -- To track if any employees are found
+BEGIN
+    FOR emp_rec IN (SELECT employee_name, dept_no FROM employees) LOOP
+        DBMS_OUTPUT.PUT_LINE('Employee Name: ' || emp_rec.employee_name || 
+                             ', Department No: ' || emp_rec.dept_no);
+        v_count := v_count + 1;
+    END LOOP;
+    
+    -- Raise NO_DATA_FOUND if no employees exist
+    IF v_count = 0 THEN
+        RAISE NO_DATA_FOUND;
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in the database.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+```
 **Output:**  
-The program should display employee names with their department numbers or the appropriate error message if no data is found.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/730c2fde-cb73-4c63-ba57-4c64c8731020" />
+
 
 ---
 
@@ -132,9 +351,93 @@ The program should display employee names with their department numbers or the a
 - Insert sample data into the `employees` table.
 - Declare a cursor using `%ROWTYPE` to fetch complete rows from the `employees` table.
 - Implement exception handling to catch the relevant exceptions and display appropriate messages.
+## program:
+```
+-- ============================================
+-- Step 1: Create or modify the employees table
+-- ============================================
+BEGIN
+    -- Drop table if it already exists
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP TABLE employees';
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN -- ORA-00942 = table does not exist
+                RAISE;
+            END IF;
+    END;
 
+    -- Create the employees table
+    EXECUTE IMMEDIATE '
+        CREATE TABLE employees (
+            emp_id      NUMBER PRIMARY KEY,
+            emp_name    VARCHAR2(50),
+            designation VARCHAR2(50),
+            salary      NUMBER
+        )
+    ';
+END;
+/
+-- ============================================
+-- Step 2: Insert sample employee data
+-- ============================================
+BEGIN
+    INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (1, 'Alice', 'Manager', 50000);
+    INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (2, 'Bob', 'Developer', 40000);
+    INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (3, 'Charlie', 'Tester', 35000);
+    INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (4, 'David', 'Analyst', 45000);
+    INSERT INTO employees (emp_id, emp_name, designation, salary) VALUES (5, 'Eva', 'HR', 38000);
+
+    COMMIT;
+END;
+/
+-- ============================================
+-- Step 3: PL/SQL block with cursor using %ROWTYPE
+-- ============================================
+DECLARE
+    -- Declare cursor
+    CURSOR emp_cursor IS
+        SELECT * FROM employees;
+
+    -- Declare a record variable based on cursor row type
+    emp_rec emp_cursor%ROWTYPE;
+
+    v_count NUMBER := 0; -- To track number of employees fetched
+BEGIN
+    -- Open the cursor
+    OPEN emp_cursor;
+
+    LOOP
+        FETCH emp_cursor INTO emp_rec;
+        EXIT WHEN emp_cursor%NOTFOUND;
+
+        DBMS_OUTPUT.PUT_LINE('Emp ID: ' || emp_rec.emp_id || 
+                             ', Name: ' || emp_rec.emp_name ||
+                             ', Designation: ' || emp_rec.designation ||
+                             ', Salary: ' || emp_rec.salary);
+
+        v_count := v_count + 1;
+    END LOOP;
+
+    CLOSE emp_cursor;
+
+    -- Raise NO_DATA_FOUND if no records were fetched
+    IF v_count = 0 THEN
+        RAISE NO_DATA_FOUND;
+    END IF;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in the database.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+```
 **Output:**  
-The program should display employee records or the appropriate error message if no data is found.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/26f2991a-f521-4139-bdbb-5877a374bf93" />
+
 
 ---
 
@@ -151,9 +454,102 @@ The program should display employee records or the appropriate error message if 
 - Insert sample data into the `employees` table with different department numbers.
 - Use a cursor with the `FOR UPDATE` clause to lock the rows of employees in a specific department and update their salary.
 - Implement exception handling to handle `NO_DATA_FOUND` or other errors that may occur.
+## program:
+```
+-- ============================================
+-- Step 1: Create or modify the employees table
+-- ============================================
+BEGIN
+    -- Drop table if it already exists
+    BEGIN
+        EXECUTE IMMEDIATE 'DROP TABLE employees';
+    EXCEPTION
+        WHEN OTHERS THEN
+            IF SQLCODE != -942 THEN -- ORA-00942 = table does not exist
+                RAISE;
+            END IF;
+    END;
 
+    -- Create the employees table with dept_no and salary
+    EXECUTE IMMEDIATE '
+        CREATE TABLE employees (
+            emp_id      NUMBER PRIMARY KEY,
+            emp_name    VARCHAR2(50),
+            dept_no     NUMBER,
+            salary      NUMBER
+        )
+    ';
+END;
+/
+-- ============================================
+-- Step 2: Insert sample employee data
+-- ============================================
+BEGIN
+    INSERT INTO employees (emp_id, emp_name, dept_no, salary) VALUES (1, 'Alice', 10, 50000);
+    INSERT INTO employees (emp_id, emp_name, dept_no, salary) VALUES (2, 'Bob', 20, 40000);
+    INSERT INTO employees (emp_id, emp_name, dept_no, salary) VALUES (3, 'Charlie', 10, 45000);
+    INSERT INTO employees (emp_id, emp_name, dept_no, salary) VALUES (4, 'David', 30, 55000);
+    INSERT INTO employees (emp_id, emp_name, dept_no, salary) VALUES (5, 'Eva', 20, 42000);
+
+    COMMIT;
+END;
+/
+-- ============================================
+-- Step 3: PL/SQL block using cursor FOR UPDATE
+-- ============================================
+DECLARE
+    -- Specify department for which salaries will be updated
+    v_dept_no NUMBER := 10;
+    v_increase NUMBER := 5000; -- Salary increment
+
+    -- Cursor with FOR UPDATE clause
+    CURSOR emp_cursor IS
+        SELECT emp_id, emp_name, dept_no, salary
+        FROM employees
+        WHERE dept_no = v_dept_no
+        FOR UPDATE OF salary;
+
+    emp_rec emp_cursor%ROWTYPE;
+    v_count NUMBER := 0;
+BEGIN
+    OPEN emp_cursor;
+
+    LOOP
+        FETCH emp_cursor INTO emp_rec;
+        EXIT WHEN emp_cursor%NOTFOUND;
+
+        -- Update salary
+        UPDATE employees
+        SET salary = salary + v_increase
+        WHERE CURRENT OF emp_cursor;
+
+        DBMS_OUTPUT.PUT_LINE('Updated salary of ' || emp_rec.emp_name ||
+                             ' to ' || (emp_rec.salary + v_increase));
+
+        v_count := v_count + 1;
+    END LOOP;
+
+    CLOSE emp_cursor;
+
+    -- Raise NO_DATA_FOUND if no rows were updated
+    IF v_count = 0 THEN
+        RAISE NO_DATA_FOUND;
+    END IF;
+
+    COMMIT;
+
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employees found in department ' || v_dept_no);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred: ' || SQLERRM);
+END;
+/
+
+```
 **Output:**  
-The program should update employee salaries and display a message, or it should display an error message if no data is found.
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/607f023e-5aeb-45bc-a2c4-9928552269d4" />
+
 
 ---
 
