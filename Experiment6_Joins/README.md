@@ -171,7 +171,7 @@ WHERE c.grade <= 100;
 
 **Output:**
 
-![Output5](output.png)<img width="917" height="658" alt="image" src="https://github.com/user-attachments/assets/c19ee104-0805-473a-a603-de15307fac11" />
+<img width="917" height="658" alt="image" src="https://github.com/user-attachments/assets/c19ee104-0805-473a-a603-de15307fac11" />
 
 **Question 6**
 ---
